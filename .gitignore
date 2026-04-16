@@ -1,0 +1,16 @@
+# editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# secrets
+.env
+.env.*
+!.env.example
