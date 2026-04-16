@@ -1,0 +1,55 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: Framework
+type: object
+required: [name, slug, purpose, when_to_use, artifacts_served, questions]
+additionalProperties: true
+properties:
+  name:
+    type: string
+    minLength: 1
+  slug:
+    type: string
+    pattern: "^[a-z0-9-]+$"
+  purpose:
+    type: string
+    minLength: 1
+  when_to_use:
+    type: array
+    items:
+      type: string
+      enum:
+        - early-values-work
+        - mid-session-pivot
+        - daily-anchor
+        - weekly-review
+        - monthly-drift
+        - quarterly-direction
+        - audience-work
+        - offer-work
+        - positioning-work
+    minItems: 1
+  artifacts_served:
+    type: array
+    items:
+      type: string
+      enum: [values, self-map, audience, offer, positioning, principles, drift-log]
+    minItems: 1
+  source:
+    type: string
+  questions:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required: [slug, text, tier]
+      additionalProperties: false
+      properties:
+        slug:
+          type: string
+          pattern: "^[a-z0-9-]+$"
+        text:
+          type: string
+          minLength: 1
+        tier:
+          type: string
+          enum: [wide, deepen, focus, close]

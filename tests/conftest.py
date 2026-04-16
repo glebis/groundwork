@@ -1,0 +1,14 @@
+import pathlib
+import pytest
+
+REPO_ROOT = pathlib.Path(__file__).parent.parent
+
+
+@pytest.fixture
+def repo_root() -> pathlib.Path:
+    return REPO_ROOT
+
+
+@pytest.fixture
+def frameworks_dir(repo_root) -> pathlib.Path:
+    return repo_root / "docs" / "frameworks"
