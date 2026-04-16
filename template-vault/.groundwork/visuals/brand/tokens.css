@@ -1,0 +1,143 @@
+/* ─────────────────────────────────────────────────────────────
+   groundwork · brand tokens · v0 · D1 "The Terminal"
+   ────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ─── type ─── */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', 'SF Mono', Consolas, monospace;
+
+  /* display (big, negative tracking) */
+  --size-display:   clamp(4rem, 12vw, 10rem);
+  --size-section:   clamp(2.5rem, 7vw, 6rem);
+  --size-large:     clamp(1.75rem, 4vw, 3rem);
+  --size-body:      clamp(1rem, 1.6vw, 1.125rem);
+  --size-mono:      clamp(0.875rem, 1.3vw, 1rem);
+  --size-small:     0.8125rem;
+
+  /* ─── color ─── monochrome, warmed a hair off pure black/white ─── */
+  --bg:             #0b0b0c;   /* near-black, tiniest blue shift */
+  --bg-elevated:    #111112;   /* card surface */
+  --bg-sunken:      #060607;   /* wells, code blocks */
+  --fg:             #f5f4f0;   /* off-white, tiniest warm shift */
+  --fg-muted:       #98938a;   /* labels, captions */
+  --fg-dim:         #555148;   /* borders as type */
+  --border:         #1e1d1a;   /* hairline */
+  --border-strong:  #2a2925;
+  --accent:         #c17a53;   /* ember — single warm accent, used sparingly */
+  --accent-dim:     #5a3a28;
+
+  /* ─── ASCII palette ─── the glyphs we use, curated ─── */
+  /* dither:  ░ ▒ ▓ █ */
+  /* box single: ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼ */
+  /* box double: ═ ║ ╔ ╗ ╚ ╝ ╠ ╣ ╦ ╩ ╬ */
+  /* bullets: ◆ ◇ ◈ ▸ ▹ · • */
+  /* marks: ⎯ ⟶ ⟵ ↯ ※ */
+
+  /* ─── spacing ─── */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-24: 6rem;
+
+  /* ─── motion ─── quiet, not bouncy ─── */
+  --ease-quiet: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-med: 240ms;
+}
+
+/* ─── base ─── */
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--size-body);
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─── display ─── */
+.t-display {
+  font-family: var(--font-sans);
+  font-size: var(--size-display);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+}
+
+.t-section {
+  font-family: var(--font-sans);
+  font-size: var(--size-section);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.02em;
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-mono);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  white-space: pre;            /* ASCII must not reflow */
+  font-variant-ligatures: none; /* preserve glyph shapes */
+}
+
+.t-mono-small {
+  font-family: var(--font-mono);
+  font-size: var(--size-small);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+}
+
+.t-label {
+  font-family: var(--font-mono);
+  font-size: var(--size-small);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--fg-muted);
+}
+
+/* ─── dither utility ─── bands of ▓▒░ used as section breakers ─── */
+.dither-break::before {
+  content: "░▒▓█▓▒░";
+  display: block;
+  font-family: var(--font-mono);
+  color: var(--fg-dim);
+  letter-spacing: 0;
+  font-size: 1rem;
+  margin: var(--s-16) 0;
+}
+
+/* ─── link ─── underline never leaves, accent only on hover ─── */
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--fg-dim);
+  transition: text-decoration-color var(--dur-fast) var(--ease-quiet);
+}
+a:hover { text-decoration-color: var(--accent); }
+
+/* ─── cursor blink ─── for prompts ─── */
+@keyframes blink { 50% { opacity: 0; } }
+.cursor::after {
+  content: "▌";
+  display: inline-block;
+  margin-left: 0.1em;
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+}
