@@ -1,0 +1,29 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: Artifact
+type: object
+required: [artifact_type, schema_version, owner]
+additionalProperties: true
+properties:
+  artifact_type:
+    type: string
+    enum: [values, self-map, audience, offer, positioning, principles, drift-log]
+  schema_version:
+    type: integer
+    minimum: 1
+  last_synthesized:
+    type: string
+    description: ISO-8601 timestamp; absent if never synthesized
+  source_sessions:
+    type: array
+    items:
+      type: string
+      pattern: "^[0-9]{8}(-[0-9]{4})?$"
+  speakable_summary:
+    type: string
+    maxLength: 400
+  owner:
+    type: string
+    minLength: 1
+  status:
+    type: string
+    enum: [seeded, drafting, active, archived]

@@ -1,0 +1,51 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: Profile
+type: object
+required: [schema_version, owner, data_folder, mode, runtime]
+additionalProperties: true
+properties:
+  schema_version:
+    type: integer
+    minimum: 1
+  owner:
+    type: string
+    minLength: 1
+  data_folder:
+    type: string
+    description: Absolute or ~-prefixed path to the .groundwork/ directory
+  mode:
+    type: string
+    enum: [deep, scheduled, hybrid, ambient]
+  runtime:
+    type: string
+    enum: [claude-code, claude-desktop, hermes, cursor, codex, other]
+  rhythm:
+    type: object
+    additionalProperties: false
+    properties:
+      daily_anchor_time:
+        type: [string, "null"]
+        description: HH:MM local time for daily ping; null disables
+      weekly_review_day:
+        type: [string, "null"]
+        enum: [mon, tue, wed, thu, fri, sat, sun, null]
+      monthly_drift_day:
+        type: [integer, "null"]
+        minimum: 1
+        maximum: 28
+      quarterly_direction:
+        type: boolean
+  active_artifacts:
+    type: array
+    items:
+      type: string
+      enum: [values, self-map, audience, offer, positioning, principles, drift-log]
+  voice_preferences:
+    type: object
+    additionalProperties: true
+    properties:
+      language_autodetect:
+        type: boolean
+      tier_default:
+        type: string
+        enum: [line, brief, full]
