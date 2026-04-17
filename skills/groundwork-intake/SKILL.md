@@ -43,11 +43,41 @@ First-run setup for the groundwork skill pack. Creates a user profile and scaffo
    - Monthly drift day (1-28, or "skip")
    Record each as `rhythm.*`. Nulls mean disabled.
 
-6. **Copy the template vault.** From the installed skill pack's `template-vault/.groundwork/` into the chosen `data_folder`. Preserve all files. Do not overwrite an existing `.groundwork/` — instead ask the user to confirm or pick a different folder.
+6. **Copy the template vault.** Locate `template-vault/.groundwork/` bundled with this skill pack, then copy it recursively into `data_folder`. Preserve all files. Do not overwrite an existing `.groundwork/` — instead ask the user to confirm or pick a different folder.
 
-7. **Write profile.md.** Replace `{{owner_name}}` and `{{data_folder_path}}` placeholders with the user's answers. Set `schema_version: 1` and `active_artifacts: [values]`.
+   **Resolving the pack root.** Try these candidates in order and use the first one that contains `template-vault/.groundwork/`:
 
-8. **Offer ingest.** Ask: *"Want to seed your Values artifact with material you've already written or said somewhere? (y/n)"* — if yes, instruct the user to run `groundwork-ingest` next; if no, point them at `groundwork-session values` as the next step.
+   ```bash
+   for ROOT in \
+       "${CLAUDE_PLUGIN_ROOT:-}" \
+       "$HOME/.claude/plugins/groundwork" \
+       "$HOME/.claude/plugins/groundwork-pack" \
+       "$HOME/ai_projects/groundwork"; do
+     [ -n "$ROOT" ] && [ -d "$ROOT/template-vault/.groundwork" ] && PACK_ROOT="$ROOT" && break
+   done
+   # Last-resort search (bounded to known roots):
+   if [ -z "${PACK_ROOT:-}" ]; then
+     PACK_ROOT="$(find "$HOME/.claude/plugins" "$HOME/ai_projects" -maxdepth 4 -type d -path '*/template-vault/.groundwork' 2>/dev/null | head -1 | sed 's|/template-vault/.groundwork||')"
+   fi
+   [ -z "${PACK_ROOT:-}" ] && { echo "template-vault not found — reinstall the groundwork skill pack"; exit 1; }
+   cp -R "$PACK_ROOT/template-vault/.groundwork" "$DATA_FOLDER/.groundwork"
+   ```
+
+   If no candidate resolves, stop with the "No template vault found" error from the Failure modes section.
+
+7. **Write profile and interpolate scaffold.** Rewrite `profile.md` frontmatter from the collected answers (`owner`, `data_folder` as absolute path, `mode`, `runtime`, `rhythm.*`, `schema_version: 1`, `active_artifacts: [values]`). Then substitute `{{owner_name}}` and `{{data_folder_path}}` across every markdown file under `data_folder` so artifact and framework templates pick up the user's identity:
+
+   ```bash
+   find "$DATA_FOLDER" -type f -name "*.md" -exec sed -i '' \
+       -e "s|{{owner_name}}|$OWNER|g" \
+       -e "s|{{data_folder_path}}|$DATA_FOLDER|g" {} \;
+   ```
+
+   (Linux: drop the `''` after `-i`.)
+
+8. **Register rhythm with the runtime.** If `mode` is `scheduled` or `hybrid` and at least one rhythm field is non-null, invoke `groundwork-rhythm` in headless mode with the just-captured rhythm values. That skill translates the cadence into runtime-specific triggers (Claude Code `schedule`, Hermes cron, etc.). Skip if `mode` is `deep` or all rhythm fields are null.
+
+9. **Offer ingest.** Ask: *"Want to seed your Values artifact with material you've already written or said somewhere? (y/n)"* — if yes, instruct the user to run `groundwork-ingest` next; if no, point them at `groundwork-session values` as the next step.
 
 ## Tiers
 
@@ -61,13 +91,15 @@ Accept all answers as a single JSON blob on stdin:
 
 ```json
 {
-  "owner": "gleb",
-  "data_folder": "~/Brains/brain/.groundwork",
+  "owner": "Your Name",
+  "data_folder": "~/.groundwork",
   "mode": "hybrid",
   "runtime": "claude-code",
   "rhythm": { "daily_anchor_time": "08:00", "weekly_review_day": "fri", "monthly_drift_day": 1, "quarterly_direction": true }
 }
 ```
+
+`data_folder` defaults to `~/.groundwork` but common choices include `$XDG_DATA_HOME/groundwork`, or a subfolder of an existing Obsidian vault (`~/path/to/vault/.groundwork`). The intake skill expands `~` to `$HOME` when writing the profile.
 
 Write everything without prompting.
 

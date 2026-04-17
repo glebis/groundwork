@@ -1,6 +1,15 @@
+<!--
+This is an **example** of a personal, project-coined framework — a vocabulary of named modes
+the original author developed over time. Ship this as inspiration, not default content.
+
+To adopt: copy this file to `frameworks/personal-modes.md` (drop the `.example` suffix) and
+adapt the modes, questions, and narrative to your own recurring states. Change `slug` to
+something personal (e.g. `alex-modes`, `my-modes`). Once a framework has your own named
+modes, it carries more weight than any borrowed one.
+-->
 ---
-name: Modes (Gleb's Lexicon)
-slug: gleb-modes
+name: Personal Modes (example)
+slug: personal-modes-example
 purpose: Project-specific vocabulary — named states and tendencies that let a user notice themselves faster mid-session
 when_to_use:
   - mid-session-pivot
