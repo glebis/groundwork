@@ -115,6 +115,96 @@ Opens an ACT values-clarification dialog. Goal: by the end, 2-4 candidate values
 ░▒▓█▓▒░
 ```
 
+## voice mode
+
+Groundwork is built voice-ready by contract, not by wrapper. Every skill returns output in three tiers:
+
+```
+◆  line   (~15 words)   → for status bars, voice pings, bot notifications
+◆  brief  (~40 words)   → for voice summaries, bot replies, daily-note inserts
+◆  full   (markdown)    → for terminal / document rendering
+```
+
+Each artifact carries a **`speakable_summary`** in its frontmatter — regenerated on every `synthesize`, ~40 words, voice-friendly. A voice agent can read the artifact out loud without touching the body.
+
+**Configuration.** Your `.groundwork/profile.md` has a `voice_preferences` block:
+
+```yaml
+voice_preferences:
+  language_autodetect: true    # Whisper auto-detects; never hard-code a language
+  tier_default: full           # which tier a skill returns when not otherwise specified
+```
+
+**Stacks.** Any voice stack that can receive tier-1/tier-2 text and optionally send transcribed user replies back:
+
+- **Hermes Agent** — built-in voice-memo transcription + TTS delivery across Telegram / Discord / Slack / WhatsApp / Signal. No groundwork config needed beyond `runtime: hermes`
+- **Pipecat** — custom voice pipeline (Deepgram → LLM → ElevenLabs/TTS). Wrap `/groundwork ask` or `/groundwork session` calls; route tiered text to TTS
+- **Custom** — anything that can call a skill and speak text. The three-tier contract is the whole interface
+
+Skills never assume voice is happening — tier selection is the only hook. Language is never hard-coded; let Whisper auto-detect. This is what makes the same skill pack work equally well in a terminal, an Obsidian plugin, a Telegram chat, and a phone call.
+
+```
+░▒▓█▓▒░
+```
+
+## cadence
+
+Groundwork supports scheduled rhythms, not just on-demand sessions. Your `rhythm` block in profile.md:
+
+```yaml
+rhythm:
+  daily_anchor_time: "09:00"        # daily check-in time (null to disable)
+  weekly_review_day: fri            # weekday for weekly review (null to disable)
+  monthly_drift_day: 15             # day-of-month for drift check
+  quarterly_direction: true         # first day of each quarter
+```
+
+- **Daily anchor** — a single focus question each morning via `groundwork-ask`
+- **Weekly review** — `groundwork-review weekly` surfaces what moved vs. stalled
+- **Monthly drift** — compare declared values against actual behavior for the month
+- **Quarterly direction** — re-run `synthesize` across all artifacts to resurface direction
+
+The `/groundwork` dispatcher detects what's due and suggests it. Cadence is optional — set any field to `null` to skip.
+
+```
+░▒▓█▓▒░
+```
+
+## data & privacy
+
+Everything is markdown in a folder you choose. No external services, no telemetry, no cloud sync unless you set it up.
+
+- `.groundwork/` lives wherever you point `data_folder` — your Obsidian vault, `~/.groundwork`, `$XDG_DATA_HOME/groundwork`, or any directory you own
+- **Sessions are append-only** — the skills never overwrite a session log, only add new ones. Synthesize distills session content into artifacts; session logs stay as raw record
+- **Artifacts are editable** — edit `artifacts/values.md` directly by hand any time; synthesize merges carefully, never overwrites blindly
+- **Frameworks are yours** — the seed set is a starting point; copy, adapt, rename, delete
+- **Version-control what you like** — running `git init` inside `.groundwork/` (or nesting it inside an existing repo) gives you memory history for free
+
+The only network traffic is whatever your agent runtime already makes (LLM calls, Hermes gateway). Groundwork itself is pure file I/O.
+
+```
+░▒▓█▓▒░
+```
+
+## runtimes
+
+```
+runtime            install path                              notes
+─────────────────  ────────────────────────────────────────  ──────────────────────────────
+claude-code        ~/.claude/skills/groundwork-*             native AskUserQuestion for options
+claude-desktop     ~/.claude/skills/groundwork-*             numbered-list fallback for options
+hermes             ~/.hermes/skills/coaching/groundwork-*    multi-platform gateway + voice
+cursor             per-project .cursor/skills/groundwork-*   headless mode via MCP
+codex              ~/.codex/skills/groundwork-*              headless mode
+other              any dir the agent scans                   plain-text I/O; degrades gracefully
+```
+
+The `session` skill's Runtime Adaptation section reads the `runtime:` field in profile.md and swaps tool calls accordingly. The same skill file runs under any agent that can read, write, and exchange messages.
+
+```
+░▒▓█▓▒░
+```
+
 ## repo layout
 
 ```

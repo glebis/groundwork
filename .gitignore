@@ -3,6 +3,11 @@
 .vscode/
 .idea/
 
+# agent runtimes that leave state in the repo
+.hermes/
+.claude/
+.cursor/
+
 # python
 __pycache__/
 *.py[cod]
